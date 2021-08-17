@@ -2,8 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-
     <title>Atividade 0</title>
+    <style type="text/css">
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
   </head>
 
   <body>
@@ -94,8 +98,12 @@
       </tbody>
     </table>
     <button onclick="module_vec_a()">Module of Vector A</button>
-    <button onclick="cross_vec_a_b()">Cross product of Vector A and Vector B</button>
-    <button onclick="dot_vec_a_b()">Dot product of Vector A and Vector B</button>
+    <button onclick="cross_vec_a_b()">
+      Cross product of Vector A and Vector B
+    </button>
+    <button onclick="dot_vec_a_b()">
+      Dot product of Vector A and Vector B
+    </button>
     <button onclick="vec_mat()">Product of Matrix A and Vector A</button>
     <button onclick="mat_mat()">Product of Matrix A and Matrix B</button>
     <button onclick="determinant_mat_a()">Determinant of Matrix A</button>
@@ -103,10 +111,21 @@
     <p id="problem-4-answer">Hi</p>
     <hr />
 
+    <h2>Problem 5</h2>
+    <button onclick="clear_canvas()">Clear</button>
+    <button onclick="draw_smiley()">Draw :)</button>
+    <button onclick="draw_colors()">Draw with colors</button>
+    <button onclick="draw_soft()">Click me a lot</button>
+    <canvas id="problem-5-canvas" width="200" height="200">
+      There should be a canvas here, but for some reason, it failed to load :(
+    </canvas>
+    <hr />
+
     <!-- Scripts -->
     <script src="./hello_world.js"></script>
     <script src="./num_even.js"></script>
     <script src="./quicksort.js"></script>
     <script src="./vector_and_matrix.js"></script>
+    <script src="./canvas.js"></script>
   </body>
 </html>
