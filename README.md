@@ -1,6 +1,6 @@
 # Introduction to Computer Graphics
 
-**Code developed in an Introduction to Computer Graphics at UFPB (Universidade Federal da Paraíba)**
+**Code developed in an Introduction to Computer Graphics class at UFPB (Universidade Federal da Paraíba)**
 
 ## Sections
 ### 0 - Warm Up!
