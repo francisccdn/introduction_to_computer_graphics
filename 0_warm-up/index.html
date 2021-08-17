@@ -2,32 +2,111 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    
+
     <title>Atividade 0</title>
   </head>
 
   <body>
     <!-- Page structure -->
     <h2>Problem 1</h2>
-    <button onclick="say_hello_world()">Hello world!</button>
-    <hr/>
+    <button onclick="hello_world()">Hello world!</button>
+    <hr />
 
     <h2>Problem 2</h2>
     <p id="problem-2-array">Make an array!</p>
     <button onclick="write_random_int_array()">Make random array</button>
     <button onclick="write_num_even()">How many even numbers?</button>
-    <hr/>
+    <hr />
 
     <h2>Problem 3</h2>
     <p>Write an array of numbers separated by commas, eg. 1,2,3,4</p>
-    <input type="text" id="problem-3-array">
+    <input value="0" type="text" id="problem-3-array" />
     <button onclick="sort_user_array()">Quicksort</button>
     <p id="problem-3-sorted"></p>
-    <hr/>
+    <hr />
+
+    <h2>Problem 4</h2>
+    <table>
+      <tbody>
+        <tr>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="m-a-00" /></td>
+          <td><input value="0" size="4" type="text" id="m-a-01" /></td>
+          <td><input value="0" size="4" type="text" id="m-a-02" /></td>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="m-b-00" /></td>
+          <td><input value="0" size="4" type="text" id="m-b-01" /></td>
+          <td><input value="0" size="4" type="text" id="m-b-02" /></td>
+        </tr>
+        <tr>
+          <td>Matrix A:</td>
+          <td><input value="0" size="4" type="text" id="m-a-10" /></td>
+          <td><input value="0" size="4" type="text" id="m-a-11" /></td>
+          <td><input value="0" size="4" type="text" id="m-a-12" /></td>
+          <td>Matrix B:</td>
+          <td><input value="0" size="4" type="text" id="m-b-10" /></td>
+          <td><input value="0" size="4" type="text" id="m-b-11" /></td>
+          <td><input value="0" size="4" type="text" id="m-b-12" /></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="m-a-20" /></td>
+          <td><input value="0" size="4" type="text" id="m-a-21" /></td>
+          <td><input value="0" size="4" type="text" id="m-a-22" /></td>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="m-b-20" /></td>
+          <td><input value="0" size="4" type="text" id="m-b-21" /></td>
+          <td><input value="0" size="4" type="text" id="m-b-22" /></td>
+        </tr>
+        <tr>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="v-a-0" /></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="v-b-0" /></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Vector A:</td>
+          <td><input value="0" size="4" type="text" id="v-a-1" /></td>
+          <td></td>
+          <td></td>
+          <td>Vector B:</td>
+          <td><input value="0" size="4" type="text" id="v-b-1" /></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="v-a-2" /></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><input value="0" size="4" type="text" id="v-b-2" /></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick="module_vec_a()">Module of Vector A</button>
+    <button onclick="cross_vec_a_b()">Cross product of Vector A and Vector B</button>
+    <button onclick="dot_vec_a_b()">Dot product of Vector A and Vector B</button>
+    <button onclick="vec_mat()">Product of Matrix A and Vector A</button>
+    <button onclick="mat_mat()">Product of Matrix A and Matrix B</button>
+    <button onclick="determinant_mat_a()">Determinant of Matrix A</button>
+    <button onclick="transpose_mat_a()">Transpose Matrix A</button>
+    <p id="problem-4-answer">Hi</p>
+    <hr />
 
     <!-- Scripts -->
     <script src="./hello_world.js"></script>
     <script src="./num_even.js"></script>
     <script src="./quicksort.js"></script>
+    <script src="./vector_and_matrix.js"></script>
   </body>
 </html>
