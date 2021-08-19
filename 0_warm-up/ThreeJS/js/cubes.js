@@ -44,3 +44,14 @@ function static_cube() {
   const { single_cube_scene } = spawn_single_cube();
   scene = single_cube_scene;
 }
+
+// 4.2
+// Render a rotating cube in the browser's window
+function rotating_cube() {
+  const { single_cube_scene, cube } = spawn_single_cube();
+  scene = single_cube_scene;
+  animation = () => {
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+  }
+}
