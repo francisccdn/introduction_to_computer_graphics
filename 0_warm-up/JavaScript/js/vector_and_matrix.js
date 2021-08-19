@@ -111,6 +111,7 @@ const Matrix3x3 = class {
 };
 
 // Handling user interaction
+
 const get_html_matrix = function (a_or_b) {
   const cols = [];
 

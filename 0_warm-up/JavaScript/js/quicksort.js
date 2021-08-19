@@ -1,5 +1,5 @@
 // 3.3
-// Implement the quicksort algorythm
+// Implement the quicksort algorithm
 
 const swap = function (array, a, b) {
   const aux = array[a];
@@ -32,6 +32,7 @@ const quicksort = function (array, low, high) {
 };
 
 // Handling user interaction
+
 const sort_user_array = function () {
   const arr = document
     .getElementById("problem-3-array")

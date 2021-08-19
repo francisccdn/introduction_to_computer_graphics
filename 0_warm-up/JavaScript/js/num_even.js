@@ -22,6 +22,7 @@ const num_even_in_array = function (arr) {
 };
 
 // Handling user interaction
+
 const write_random_int_array = function () {
   const arr = make_random_int_array(10);
   document.getElementById("problem-2-array").innerHTML = arr.toString();
