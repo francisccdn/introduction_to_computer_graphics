@@ -23,7 +23,7 @@ const color_buffer = new Canvas("canvas");
 color_buffer.clear();
 
 // Midpoint Line Algorithm with color interpolation
-function MidPointLineAlgorithm(x0, y0, x1, y1, color_0, color_1) {
+function MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1) {
   const x_start = x0,
     x_end = x1,
     y_start = y0,
@@ -32,18 +32,26 @@ function MidPointLineAlgorithm(x0, y0, x1, y1, color_0, color_1) {
   // Set line equation alpha and beta values
   const alpha = y_end - y_start;
   const beta = -(x_end - x_start);
-  
+
   // Declare first decision variable
   let decision = 2 * alpha + beta;
-  
+
   for (let draw_x = x_start, draw_y = y_start; draw_x <= x_end; draw_x++) {
-    // Draw a pixel current (draw_x, draw_y)
-    color_buffer.putPixel(draw_x, draw_y, color_0);
-    
+    // Set color of next pixel
+    let color = [];
+    for (let i = 0; i < 3; i++) {
+      color.push(
+        ((color1[i] - color0[i]) * (draw_x - x_start)) / (x_end - x_start) + color0[i]
+      );
+    }
+
+    // Draw a pixel at current (draw_x, draw_y)
+    color_buffer.putPixel(draw_x, draw_y, color);
+
     if (decision >= 0) {
       /* Northeast */
       draw_y++;
-      
+
       decision += 2 * (alpha + beta);
     } else {
       /* East */
@@ -54,8 +62,8 @@ function MidPointLineAlgorithm(x0, y0, x1, y1, color_0, color_1) {
 
 // Draws a red pixel on start and end of line
 function DebugLine(x0, y0, x1, y1) {
-  color_buffer.putPixel(x0, y0, [255,0,0]);
-  color_buffer.putPixel(x1, y1, [255,0,0]);
+  color_buffer.putPixel(x0, y0, [255, 0, 0]);
+  color_buffer.putPixel(x1, y1, [255, 0, 0]);
 }
 
 function DrawTriangle(x0, y0, x1, y1, x2, y2, color_0, color_1, color_2) {
@@ -63,5 +71,5 @@ function DrawTriangle(x0, y0, x1, y1, x2, y2, color_0, color_1, color_2) {
 }
 
 // Function calls
-MidPointLineAlgorithm(20, 10, 90, 30, [255, 255, 255]);
+MidPointLineAlgorithm(20, 10, 90, 30, [255, 0, 255], [0, 255, 0]);
 DebugLine(20, 10, 90, 30);
