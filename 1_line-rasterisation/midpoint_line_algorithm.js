@@ -148,11 +148,13 @@ function DebugLine(x0, y0, x1, y1) {
   color_buffer.putPixel(x1, y1, [255, 0, 0]);
 }
 
-function DrawTriangle(x0, y0, x1, y1, x2, y2, color_0, color_1, color_2) {
-  // TODO
+// Draws a tringle with Midpoint Line Algorithm
+function DrawTriangle(x0, y0, x1, y1, x2, y2, color0, color1, color2) {
+  MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1);
+  MidPointLineAlgorithm(x1, y1, x2, y2, color1, color2);
+  MidPointLineAlgorithm(x2, y2, x0, y0, color2, color0);
 }
 
 // Function calls
 
-MidPointLineAlgorithm(105, 79, 73, 126, [255, 0, 255], [255, 255, 0]);
-DebugLine(105, 79, 73, 126);
+DrawTriangle(25, 30, 50, 100, 100, 15, [255,0,0,255], [0,0,255,255], [0,255,0,255]);
