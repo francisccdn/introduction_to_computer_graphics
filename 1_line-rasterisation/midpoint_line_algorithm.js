@@ -24,119 +24,95 @@ color_buffer.clear();
 
 // Midpoint Line Algorithm with color interpolation
 function MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1) {
-  // Get octant of line
-  let octant = 1;
-
-  if (Math.abs(x1 - x0) > Math.abs(y1 - y0)) {
-    if (x1 > x0) {
-      if (y1 > y0) {
-        octant = 1;
-      } else {
-        octant = 8;
-      }
-    } else {
-      if (y1 > y0) {
-        octant = 4;
-      } else {
-        octant = 5;
-      }
-    }
-  } else {
-    if (x1 > x0) {
-      if (y1 > y0) {
-        octant = 2;
-      } else {
-        octant = 7;
-      }
-    } else {
-      if (y1 > y0) {
-        octant = 3;
-      } else {
-        octant = 6;
-      }
-    }
-  }
-
   // Set variables according to octant
 
-  // a is the coordinate that is always in/decremented
-  // b is the coordinate that changes based on the decision variable
-  let a_start = x0,
-    a_end = x1,
-    b_start = y0,
-    b_end = y1;
+  if (x1 < x0) {
+    // Left-side octants
 
-  let b_mod = 1;
-  let a_mod = 1;
+    // Invert colors
+    const color_aux = color0;
+    color0 = color1;
+    color1 = color_aux;
+
+    // Invert first and final coords
+    const x_aux = x0;
+    x0 = x1;
+    x1 = x_aux;
+
+    const y_aux = y0;
+    y0 = y1;
+    y1 = y_aux;
+  }
+
+  // p is the coordinate that is always in/decremented
+  // q is the coordinate that changes based on the decision variable
+  let p_start = x0,
+    q_start = y0,
+    p_end = x1,
+    q_end = y1;
+
+  let p_mod = 1;
+  let q_mod = 1;
+
   let tall = false;
 
-  if (octant == 2 || octant == 3 || octant == 6 || octant == 7) {
+  if (Math.abs(x1 - x0) > Math.abs(y1 - y0)) {
+    // 1st and 8th octants (or left-side equivalents)
+    if (y1 < y0) {
+      // 8th
+      q_mod = -1;
+    }
+  } else {
+    // 2nd and 7th octants (or left-side equivalents)
+
+    // Set Y as coordinate that always in/decreases
     tall = true;
-  }
-  if (octant == 3 || octant == 4 || octant == 5 || octant == 6) {
-    const aux = color0;
-    color0 = color1;
-    color1 = aux;
-  }
-  if (octant == 4 || octant == 8) {
-    b_mod = -1;
-  }
-  if (octant == 3 || octant == 7) {
-    a_mod = -1;
-  }
-  if (octant == 2 || octant == 7) {
-    a_start = y0;
-    a_end = y1;
-    b_start = x0;
-    b_end = x1;
-  }
-  if (octant == 3 || octant == 6) {
-    a_start = y1;
-    a_end = y0;
-    b_start = x1;
-    b_end = x0;
-  }
-  if (octant == 4 || octant == 5) {
-    a_start = x1;
-    a_end = x0;
-    b_start = y1;
-    b_end = y0;
+
+    p_start = y0;
+    p_end = y1;
+    q_start = x0;
+    q_end = x1;
+
+    if (y1 < y0) {
+      // 7th
+      p_mod = -1;
+    }
   }
 
   // Set line equation alpha and beta values
-  const alpha = (b_end - b_start) * b_mod;
-  const beta = -(a_end - a_start) * a_mod;
+  const alpha = (q_end - q_start) * q_mod;
+  const beta = -(p_end - p_start) * p_mod;
 
   // Declare first decision variable
   let decision = 2 * alpha + beta;
-  let draw_a = a_start,
-    draw_b = b_start;
+  let draw_p = p_start,
+    draw_q = q_start;
 
-  while (draw_a != a_end) {
+  while (draw_p != p_end) {
     // Set color of next pixel
     let color = [];
     for (let i = 0; i < 3; i++) {
       color.push(
-        ((color1[i] - color0[i]) * (draw_a - a_start)) / (a_end - a_start) +
+        ((color1[i] - color0[i]) * (draw_p - p_start)) / (p_end - p_start) +
           color0[i]
       );
     }
 
     // Draw a pixel at current coordinates
     if (!tall) {
-      color_buffer.putPixel(draw_a, draw_b, color);
+      color_buffer.putPixel(draw_p, draw_q, color);
     } else {
-      color_buffer.putPixel(draw_b, draw_a, color);
+      color_buffer.putPixel(draw_q, draw_p, color);
     }
 
     if (decision >= 0) {
-      draw_b += b_mod;
+      draw_q += q_mod;
 
       decision += 2 * (alpha + beta);
     } else {
       decision += 2 * alpha;
     }
-    draw_a += a_mod;
+    draw_p += p_mod;
   }
   // Draw last pixel
   color_buffer.putPixel(x1, y1, color1);
