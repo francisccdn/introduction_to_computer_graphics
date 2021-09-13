@@ -91,10 +91,12 @@ function MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1) {
   while (draw_p != p_end) {
     // Set color of next pixel
     let color = [];
+    const color_alpha =
+      (((color1[3] - color0[3]) * (draw_p - p_start)) / (p_end - p_start) + color0[3]) / 255;
     for (let i = 0; i < 3; i++) {
       color.push(
-        ((color1[i] - color0[i]) * (draw_p - p_start)) / (p_end - p_start) +
-          color0[i]
+        color_alpha *
+          (((color1[i] - color0[i]) * (draw_p - p_start)) / (p_end - p_start) + color0[i])
       );
     }
 
@@ -115,7 +117,12 @@ function MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1) {
     draw_p += p_mod;
   }
   // Draw last pixel
-  color_buffer.putPixel(x1, y1, color1);
+  const color = [
+    color1[0] * (color1[3] / 255),
+    color1[1] * (color1[3] / 255),
+    color1[2] * (color1[3] / 255),
+  ];
+  color_buffer.putPixel(x1, y1, color);
 }
 
 // Draws a red pixel on start and end of line
@@ -132,13 +139,13 @@ function DrawTriangle(x0, y0, x1, y1, x2, y2, color0, color1, color2) {
 }
 
 function Totoro() {
-  const grey = [93, 90, 88];
-  const beige = [78, 72, 58];
-  const blue_light = [24, 22, 131];
-  const blue_dark = [8, 10, 52];
-  const green_light = [23, 30, 19];
-  const green_dark = [11, 20, 14];
-  const white = [205, 205, 205];
+  const grey = [93, 90, 88, 255];
+  const beige = [78, 72, 58, 255];
+  const blue_light = [24, 22, 131, 255];
+  const blue_dark = [8, 10, 52, 255];
+  const green_light = [23, 30, 19, 255];
+  const green_dark = [11, 20, 14, 255];
+  const white = [205, 205, 205, 255];
 
   const y_offset = 128;
 
