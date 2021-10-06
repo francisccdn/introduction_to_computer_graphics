@@ -252,7 +252,17 @@ function MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1) {
 
 /*** RENDERING GEOMETRY ***/
 
-// TODO
+function Render(vertices, edges, m_transf, color) {
+  // Run vertices through pipeline
+  const viewport_vertices = GraphicsPipeline(vertices, m_transf);
+
+  // Raster each edge of geometry
+  edges.forEach((edge) => {
+    const a = viewport_vertices[edge[0]];
+    const b = viewport_vertices[edge[1]];
+    MidPointLineAlgorithm(a.x, a.y, b.x, b.y, color, color);
+  })
+}
 
 /*** DEMO ***/
 
@@ -275,5 +285,8 @@ set_cam_pos([1.3,1.7,2.0]);
 set_cam_look_at([0.0,0.0,0.0]); 
 set_cam_up([0.0,1.0,0.0]);      
 
-// TODO
-console.log("hey!");
+// Demo cube transformation
+transformation = new THREE.Matrix4();
+
+console.log("Hey");
+//Render(cube_vertices, cube_edges, transformation, [255, 0, 0, 255]);
