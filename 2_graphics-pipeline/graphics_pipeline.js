@@ -105,16 +105,20 @@ function GraphicsPipeline(vertices, m_transf) {
  
   /*** Viewport Matrix: NDC --> Screen space ***/
  
-  // TODO
-  let m_viewport = new THREE.Matrix4();
+  const m_viewport = new THREE.Matrix4();
+  const m_vp_x = viewport_x / 2; // Just for a neater matrix
+  const m_vp_y = viewport_y / 2; // Just for a neater matrix
 
-  m_viewport.set(1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0);
+  m_viewport.set(m_vp_x, 0.0,    0.0, 1.0,
+                 0.0,    m_vp_y, 0.0, 1.0,
+                 0.0,    0.0,    1.0, 0.0,
+                 0.0,    0.0,    0.0, 1.0);
 
   for (let i = 0; i < 8; ++i)
     vertices[i].applyMatrix4(m_viewport);
+
+  /*** Return! ***/
+  return vertices;
 }  
     
 /*** RASTERIZATION ***/
