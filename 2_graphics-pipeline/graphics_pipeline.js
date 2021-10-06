@@ -87,20 +87,21 @@ function GraphicsPipeline(vertices, m_transf) {
  
   /*** Projection Matrix: Camera space --> Clipping space ***/
  
-  // TODO
-  let m_projection = new THREE.Matrix4();
- 
-  m_projection.set(1.0, 0.0, 0.0, 0.0,
-                   0.0, 1.0, 0.0, 0.0,
-                   0.0, 0.0, 1.0, 0.0,
-                   0.0, 0.0, 0.0, 1.0);
+  const m_projection = new THREE.Matrix4();
+  const d = dist_projection_plane; // Just for a neater matrix
+
+  m_projection.set(1.0, 0.0,    0.0, 0.0,
+                   0.0, 1.0,    0.0, 0.0,
+                   0.0, 0.0,    1.0,   d,
+                   0.0, 0.0, -(1/d), 0.0);
  
   for (let i = 0; i < 8; ++i)
     vertices[i].applyMatrix4(m_projection);
  
   /*** Homogenization: Clipping space --> Normalized device coordinates (NDC) ***/
  
-  // TODO
+  for (let i = 0; i < 8; ++i)
+    vertices[i].multiplyScalar(1 / vertices[i].w)
  
   /*** Viewport Matrix: NDC --> Screen space ***/
  
