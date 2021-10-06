@@ -117,6 +117,9 @@ function GraphicsPipeline(vertices, m_transf) {
   for (let i = 0; i < 8; ++i)
     vertices[i].applyMatrix4(m_viewport);
 
+  for (let i = 0; i < 8; ++i)
+    vertices[i].round();
+
   /*** Return! ***/
   return vertices;
 }  
@@ -289,4 +292,4 @@ set_cam_up([0.0,1.0,0.0]);
 transformation = new THREE.Matrix4();
 
 console.log("Hey");
-//Render(cube_vertices, cube_edges, transformation, [255, 0, 0, 255]);
+Render(cube_vertices, cube_edges, transformation, [255, 0, 0, 255]);
