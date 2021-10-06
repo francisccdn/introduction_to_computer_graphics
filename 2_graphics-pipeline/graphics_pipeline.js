@@ -32,15 +32,17 @@ function set_viewport(vec2) {
 
 // Params: object space vertices; matrix of object transformations
 // Returns: vertices in screen space.
-function GraphicsPipeline(vertices, m_transformations) {
+function GraphicsPipeline(vertices, m_transf) {
 
   /*** Model Matrix: Object space --> Universe space ***/
-  let m_model = new THREE.Matrix4();
+  
+  if (m_transf === undefined) {
+    // Initialize transformations as identity if not set
+    m_transf = new THREE.Matrix4();
+  }
 
-  m_model.set(1.0, 0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0, 0.0,
-              0.0, 0.0, 1.0, 0.0,
-              0.0, 0.0, 0.0, 1.0);
+  // Same as initializing m_model as identity then doing m_model.multiply(m_transf)
+  let m_model = m_transf;
 
   for (let i = 0; i < 8; ++i)
     vertices[i].applyMatrix4(m_model);
