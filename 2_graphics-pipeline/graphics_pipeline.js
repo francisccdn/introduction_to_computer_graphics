@@ -42,7 +42,7 @@ function GraphicsPipeline(vertices, m_transf) {
   }
 
   // Same as initializing m_model as identity then doing m_model.multiply(m_transf)
-  let m_model = m_transf;
+  const m_model = m_transf;
 
   for (let i = 0; i < 8; ++i)
     vertices[i].applyMatrix4(m_model);
@@ -52,30 +52,35 @@ function GraphicsPipeline(vertices, m_transf) {
  
   // Derive camera space basis from camera parameters
  
-  // TODO
+  const cam_dir = new THREE.Vector3();
+  cam_dir.subVectors(cam_look_at, cam_pos);                           // Get camera direction from look at
+
+  const cam_basis_x = new THREE.Vector3();
+  const cam_basis_y = new THREE.Vector3();
+  const cam_basis_z = cam_dir.clone().multiplyScalar(-1).normalize(); // Z axis for camera basis
+  cam_basis_x.crossVectors(cam_up, cam_basis_z).normalize();          // X axis for camera basis
+  cam_basis_y.crossVectors(cam_basis_z, cam_basis_x).normalize();     // Y axis for camera basis
 
   // Make 'm_bt', inverse matrix of the camera basis
  
-  // TODO
-  let m_bt = new THREE.Matrix4();
+  const m_bt = new THREE.Matrix4();
  
-  m_bt.set(1.0, 0.0, 0.0, 0.0,
-           0.0, 1.0, 0.0, 0.0,
-           0.0, 0.0, 1.0, 0.0,
-           0.0, 0.0, 0.0, 1.0);
+  m_bt.set(cam_basis_x.x, cam_basis_x.y, cam_basis_x.z, 0.0,
+           cam_basis_y.x, cam_basis_y.y, cam_basis_y.z, 0.0,
+           cam_basis_z.x, cam_basis_z.y, cam_basis_z.z, 0.0,
+           0.0,           0.0,           0.0,           1.0);
  
   // Make translation matrix 'm_t' to treat cases in which origins of camera and universe spaces do not coincide
  
-  // TODO
-  let m_t = new THREE.Matrix4();
+  const m_t = new THREE.Matrix4();
  
-  m_t.set(1.0, 0.0, 0.0, 0.0,
-          0.0, 1.0, 0.0, 0.0,
-          0.0, 0.0, 1.0, 0.0,
+  m_t.set(1.0, 0.0, 0.0, -cam_pos.x,
+          0.0, 1.0, 0.0, -cam_pos.y,
+          0.0, 0.0, 1.0, -cam_pos.z,
           0.0, 0.0, 0.0, 1.0);
 
   // Make view matrix 'm_view' as a product of 'm_bt' and 'm_t'
-  let m_view = m_bt.clone().multiply(m_t);
+  const m_view = m_bt.clone().multiply(m_t);
  
   for (let i = 0; i < 8; ++i)
     vertices[i].applyMatrix4(m_view);
@@ -266,3 +271,4 @@ set_cam_look_at([0.0,0.0,0.0]);
 set_cam_up([0.0,1.0,0.0]);      
 
 // TODO
+console.log("hey!");
