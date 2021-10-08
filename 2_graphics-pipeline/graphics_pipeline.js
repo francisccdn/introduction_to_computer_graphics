@@ -36,7 +36,7 @@ function GraphicsPipeline(vertices, m_transf) {
 
   /*** Model Matrix: Object space --> Universe space ***/
   
-  if (m_transf === undefined) {
+  if (typeof(m_transf) === undefined) {
     // Initialize transformations as identity if not set
     m_transf = new THREE.Matrix4();
   }
@@ -44,7 +44,7 @@ function GraphicsPipeline(vertices, m_transf) {
   // Same as initializing m_model as identity then doing m_model.multiply(m_transf)
   const m_model = m_transf;
 
-  for (let i = 0; i < 8; ++i)
+  for (let i = 0; i < vertices.length; ++i)
     vertices[i].applyMatrix4(m_model);
 
  
@@ -82,7 +82,7 @@ function GraphicsPipeline(vertices, m_transf) {
   // Make view matrix 'm_view' as a product of 'm_bt' and 'm_t'
   const m_view = m_bt.clone().multiply(m_t);
  
-  for (let i = 0; i < 8; ++i)
+  for (let i = 0; i < vertices.length; ++i)
     vertices[i].applyMatrix4(m_view);
  
   /*** Projection Matrix: Camera space --> Clipping space ***/
@@ -95,12 +95,12 @@ function GraphicsPipeline(vertices, m_transf) {
                    0.0, 0.0,    1.0,   d,
                    0.0, 0.0, -(1/d), 0.0);
  
-  for (let i = 0; i < 8; ++i)
+  for (let i = 0; i < vertices.length; ++i)
     vertices[i].applyMatrix4(m_projection);
  
   /*** Homogenization: Clipping space --> Normalized device coordinates (NDC) ***/
  
-  for (let i = 0; i < 8; ++i)
+  for (let i = 0; i < vertices.length; ++i)
     vertices[i].multiplyScalar(1 / vertices[i].w)
  
   /*** Viewport Matrix: NDC --> Screen space ***/
@@ -114,10 +114,10 @@ function GraphicsPipeline(vertices, m_transf) {
                  0.0,    0.0,    1.0, 0.0,
                  0.0,    0.0,    0.0, 1.0);
 
-  for (let i = 0; i < 8; ++i)
+  for (let i = 0; i < vertices.length; ++i)
     vertices[i].applyMatrix4(m_viewport);
 
-  for (let i = 0; i < 8; ++i)
+  for (let i = 0; i < vertices.length; ++i)
     vertices[i].round();
 
   /*** Return! ***/
@@ -318,6 +318,8 @@ function Render(vertices, edges, m_transf, color) {
 
 /*** DEMO ***/
 
+/*// DEFAULT CUBE
+
 // Vertices of a default cube centered in its object space
 //                                          X     Y     Z    W (coord. homogênea)
 const cube_vertices = [new THREE.Vector4(-1.0, -1.0, -1.0, 1.0),
@@ -344,3 +346,34 @@ transformation.multiply(TranslationMatrix(-1, -1, -2));
 transformation.multiply(ScaleMatrix(1, 1.5, 0.5))
 
 Render(cube_vertices, cube_edges, transformation, [255, 0, 0, 255]);
+*/
+
+// OCTAHEDRON
+
+// Vertices
+//                                        X     Y     Z    W (coord. homogênea)
+const d8_vertices = [new THREE.Vector4(-1.0,  0.0,  0.0, 1.0),
+                     new THREE.Vector4( 0.0,  1.0,  0.0, 1.0),
+                     new THREE.Vector4( 1.0,  0.0,  0.0, 1.0),
+                     new THREE.Vector4( 0.0, -1.0,  0.0, 1.0),
+                     new THREE.Vector4( 0.0,  0.0,  1.0, 1.0),
+                     new THREE.Vector4( 0.0,  0.0, -1.0, 1.0)];                  
+// Edges
+const d8_edges = [[0,1], [0,3], [0,4], [0,5], [1,2], [1,4], [1,5], [2,3], [2,4], [2,5], [3,4], [3,5]];
+
+// Transformations
+const d8_transf = new THREE.Matrix4();
+d8_transf.multiply(RotationMatrix('z', 25));
+d8_transf.multiply(RotationMatrix('x', -10));
+d8_transf.multiply(RotationMatrix('y', -10));
+d8_transf.multiply(ScaleMatrix(0.6,1.4,0.8));
+d8_transf.multiply(TranslationMatrix(0.3,-0.6,-0.9));
+d8_transf.multiply(ScaleMatrix(1.4,1.4,1.4));
+
+// Camera param
+set_cam_look_at([0,0,0]);
+set_cam_pos([0,0,2]);
+set_cam_up([0,1,0]);
+
+// Render!
+Render(d8_vertices, d8_edges, d8_transf, [200, 60, 200, 255]);
