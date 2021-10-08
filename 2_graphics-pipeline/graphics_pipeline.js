@@ -253,6 +253,55 @@ function MidPointLineAlgorithm(x0, y0, x1, y1, color0, color1) {
   color_buffer.putPixel(x1, y1, color);
 }
 
+/*** TRANSFORMATIONS ***/
+
+function RotationMatrix(axis, angle) {
+  const m_rot = new THREE.Matrix4();
+  
+  const deg_to_rad = (Math.PI/180);
+  const cos = Math.cos(angle * deg_to_rad);
+  const sin = Math.sin(angle * deg_to_rad);
+  
+  if (axis == 'x') {
+    m_rot.set(1.0, 0.0, 0.0, 0.0,
+              0.0, cos, sin, 0.0,
+              0.0,-sin, cos, 0.0,
+              0.0, 0.0, 0.0, 1.0);
+  }
+  if (axis == 'y') {
+    m_rot.set(cos, 0.0,-sin, 0.0,
+              0.0, 1.0, 0.0, 0.0,
+              sin, 0.0, cos, 0.0,
+              0.0, 0.0, 0.0, 1.0);
+  }
+  if (axis == 'z') {
+    m_rot.set(cos, sin, 0.0, 0.0,
+             -sin, cos, 0.0, 0.0,
+              0.0, 0.0, 1.0, 0.0,
+              0.0, 0.0, 0.0, 1.0);    
+  }
+  return m_rot;
+}
+
+function TranslationMatrix(x, y, z) {
+  const m_trans = new THREE.Matrix4();
+  m_trans.set(1.0, 0.0, 0.0, x,
+              0.0, 1.0, 0.0, y,
+              0.0, 0.0, 1.0, z,
+              0.0, 0.0, 0.0, 1.0);
+  return m_trans;
+}
+
+
+function ScaleMatrix(x, y, z) {
+  const m_scale = new THREE.Matrix4();
+  m_scale.set(  x, 0.0, 0.0, 0.0,
+              0.0,   y, 0.0, 0.0,
+              0.0, 0.0,   z, 0.0,
+              0.0, 0.0, 0.0, 1.0);
+  return m_scale;
+}
+
 /*** RENDERING GEOMETRY ***/
 
 function Render(vertices, edges, m_transf, color) {
@@ -290,5 +339,8 @@ set_cam_up([0.0,1.0,0.0]);
 
 // Demo cube transformation
 transformation = new THREE.Matrix4();
+transformation.multiply(RotationMatrix('x', -40));
+transformation.multiply(TranslationMatrix(-1, -1, -2));
+transformation.multiply(ScaleMatrix(1, 1.5, 0.5))
 
 Render(cube_vertices, cube_edges, transformation, [255, 0, 0, 255]);
