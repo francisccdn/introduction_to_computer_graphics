@@ -109,8 +109,8 @@ function GraphicsPipeline(vertices, m_transf) {
   const m_vp_x = viewport_x / 2; // Just for a neater matrix
   const m_vp_y = viewport_y / 2; // Just for a neater matrix
 
-  m_viewport.set(m_vp_x, 0.0,    0.0, 1.0,
-                 0.0,    m_vp_y, 0.0, 1.0,
+  m_viewport.set(m_vp_x, 0.0,    0.0, m_vp_x,
+                 0.0,    m_vp_y, 0.0, m_vp_y,
                  0.0,    0.0,    1.0, 0.0,
                  0.0,    0.0,    0.0, 1.0);
 
@@ -291,5 +291,4 @@ set_cam_up([0.0,1.0,0.0]);
 // Demo cube transformation
 transformation = new THREE.Matrix4();
 
-console.log("Hey");
 Render(cube_vertices, cube_edges, transformation, [255, 0, 0, 255]);
