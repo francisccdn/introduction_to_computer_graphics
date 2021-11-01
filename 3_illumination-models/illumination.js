@@ -43,7 +43,7 @@ void main() {
     vec3 R_cam_spc = reflect(L_cam_spc, N_cam_spc);
 
     // Direction from vertex to camera normalized and in camera space
-    vec3 V_cam_spc = normalize(-P_cam_spc.xyz);
+    vec3 V_cam_spc = normalize(P_cam_spc.xyz);
 
     // Highlight factor
     float n_highlight = 16.0;
