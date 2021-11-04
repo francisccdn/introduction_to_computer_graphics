@@ -84,9 +84,6 @@ uniform vec3 Ip_position;
 varying vec4 Ip_pos_cam_spc;
 varying vec4 P_cam_spc;
 varying vec3 N_cam_spc;
-varying vec3 L_cam_spc;
-varying vec3 R_cam_spc;
-varying vec3 V_cam_spc;
 
 void main() {
     // Point light position in camera space
@@ -97,15 +94,6 @@ void main() {
 
     // Vertex normal in camera space
     N_cam_spc = normalize(normalMatrix * normal);
-
-    // Direction from vertex to point light normalized and in camera space
-    L_cam_spc = normalize(Ip_pos_cam_spc.xyz - P_cam_spc.xyz);
-
-    // Direction from vertex to point light reflected over vertex normal
-    R_cam_spc = reflect(L_cam_spc, N_cam_spc);
-
-    // Direction from vertex to camera normalized and in camera space
-    V_cam_spc = normalize(P_cam_spc.xyz);
 
     // Final vertex position after transformations in shader
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -128,18 +116,27 @@ uniform vec3 k_s;
 varying vec4 Ip_pos_cam_spc;
 varying vec4 P_cam_spc;
 varying vec3 N_cam_spc;
-varying vec3 L_cam_spc;
-varying vec3 R_cam_spc;
-varying vec3 V_cam_spc;
 
 void main() {
+    // Normalizing the interpolated normal
+    vec3 N_frag = normalize(N_cam_spc);
+
+    // Direction from vertex to point light normalized and in camera space
+    vec3 L_cam_spc = normalize(Ip_pos_cam_spc.xyz - P_cam_spc.xyz);
+    
+    // Direction from vertex to point light reflected over vertex normal
+    vec3 R_cam_spc = reflect(L_cam_spc, N_frag);
+    
+    // Direction from vertex to camera normalized and in camera space
+    vec3 V_cam_spc = normalize(P_cam_spc.xyz);
+    
     // Highlight factor
     float n_highlight = 16.0;
 
     // ** Phong Illumination Model ** //
 
     vec3 ambient_term = Ia.xyz * k_a.xyz;
-    vec3 diffuse_term = Ip_diffuse_color.xyz * k_d.xyz * max(0.0, dot(N_cam_spc, L_cam_spc));
+    vec3 diffuse_term = Ip_diffuse_color.xyz * k_d.xyz * max(0.0, dot(N_frag, L_cam_spc));
     vec3 specular_term = Ip_diffuse_color.xyz * k_s.xyz * pow(max(0.0, dot(R_cam_spc, V_cam_spc)), n_highlight);
 
     vec3 I = ambient_term + diffuse_term + specular_term;
