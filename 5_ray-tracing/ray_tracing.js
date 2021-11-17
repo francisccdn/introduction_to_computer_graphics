@@ -86,12 +86,16 @@ class Interseccao {
 //   raio: Raio da esfera.
 //   kd: Coeficiente de reflectancia difusa da esfera.
 //   ka: Coeficiente de reflectancia ambiente da esfera.
+//   ks: Coeficiente de reflectancia especular da esfera.
+//   n_highlight: Expoente n de reflectancia especular.
 class Esfera {
-  constructor(centro, raio, kd, ka) {
+  constructor(centro, raio, kd, ka, ks, n_highlight) {
     this.centro = centro;
     this.raio = raio;
     this.kd = kd;
     this.ka = ka;
+    this.ks = ks;
+    this.n_highlight = n_highlight;
   }
 
   // Metodo que testa a interseccao entre o raio e a esfera.
@@ -155,7 +159,9 @@ function Render() {
       new THREE.Vector3(0.0, 0.0, -3.0),
       1.0,
       new THREE.Vector3(1, 0, 0),
-      new THREE.Vector3(1, 0, 0)
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(1, 1, 1),
+      32
     )
   );
 
@@ -174,16 +180,30 @@ function Render() {
       for (obj of objects) {
         if (obj.interseccionar(raio, interseccao)) {
           // Se houver interseccao entao...
-          let termo_ambiente = Ia.clone().multiply(obj.ka); // Calculo do termo ambiente do modelo local de iluminacao.
-          let L = Ip.posicao.clone().sub(interseccao.posicao).normalize(); // Vetor que aponta para a fonte e luz pontual.
+          const ambient_term = Ia.clone().multiply(obj.ka); // Calculo do termo ambiente do modelo local de iluminacao.
+          const L = Ip.posicao.clone().sub(interseccao.posicao).normalize(); // Vetor que aponta para a fonte e luz pontual.
 
           // Calculo do termo difuso do modelo local de iluminacao.
-          let termo_difuso = Ip.cor
+          const diffuse_term = Ip.cor
             .clone()
             .multiply(obj.kd)
             .multiplyScalar(Math.max(0.0, interseccao.normal.dot(L)));
 
-          PutPixel(x, y, termo_difuso.add(termo_ambiente)); // Combina os termos difuso e ambiente e pinta o pixel.
+          // Specular term for local illumination model
+          const V = interseccao.posicao.clone().normalize().multiplyScalar(-1); // Direction from point to camera
+          const R = L.clone().reflect(interseccao.normal).multiplyScalar(-1); // Reflected L (points from point to light source) along normal
+
+          const specular_term = Ip.cor
+            .clone()
+            .multiply(obj.ks)
+            .multiplyScalar(Math.pow(Math.max(0, R.dot(V)), obj.n_highlight));
+
+          // Final color fragment will assume
+          const fragment_color = diffuse_term
+            .add(ambient_term)
+            .add(specular_term);
+
+          PutPixel(x, y, fragment_color);
         } else {
           // Senao houver interseccao entao...
           PutPixel(x, y, new THREE.Vector3(0.0, 0.0, 0.0)); // Pinta o pixel com a cor de fundo.
