@@ -84,10 +84,14 @@ class Interseccao {
 // Construtor:
 //   centro: Coordenadas do centro da esfera no espaco do universo (THREE.Vector3).
 //   raio: Raio da esfera.
+//   kd: Coeficiente de reflectancia difusa da esfera.
+//   ka: Coeficiente de reflectancia ambiente da esfera.
 class Esfera {
-  constructor(centro, raio) {
+  constructor(centro, raio, kd, ka) {
     this.centro = centro;
     this.raio = raio;
+    this.kd = kd;
+    this.ka = ka;
   }
 
   // Metodo que testa a interseccao entre o raio e a esfera.
@@ -143,12 +147,23 @@ class Luz {
 
 // Funcao que renderiza a cena utilizando ray tracing.
 function Render() {
-  let camera = new Camera();
-  let s1 = new Esfera(new THREE.Vector3(0.0, 0.0, -3.0), 1.0);
-  let Ip = new Luz(
+  const camera = new Camera();
+  const objects = [];
+
+  objects.push(
+    new Esfera(
+      new THREE.Vector3(0.0, 0.0, -3.0),
+      1.0,
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(1, 0, 0)
+    )
+  );
+
+  const Ip = new Luz(
     new THREE.Vector3(-10.0, 10.0, 4.0),
     new THREE.Vector3(0.8, 0.8, 0.8)
   );
+  const Ia = new THREE.Vector3(0.2, 0.2, 0.2); // Intensidade da luz ambiente.
 
   // Lacos que percorrem os pixels do sensor.
   for (let y = 0; y < 512; ++y)
@@ -156,26 +171,24 @@ function Render() {
       let raio = camera.raio(x, y); // Construcao do raio primario que passa pelo centro do pixel de coordenadas (x,y).
       let interseccao = new Interseccao();
 
-      if (s1.interseccionar(raio, interseccao)) {
-        // Se houver interseccao entao...
+      for (obj of objects) {
+        if (obj.interseccionar(raio, interseccao)) {
+          // Se houver interseccao entao...
+          let termo_ambiente = Ia.clone().multiply(obj.ka); // Calculo do termo ambiente do modelo local de iluminacao.
+          let L = Ip.posicao.clone().sub(interseccao.posicao).normalize(); // Vetor que aponta para a fonte e luz pontual.
 
-        let ka = new THREE.Vector3(1.0, 0.0, 0.0); // Coeficiente de reflectancia ambiente da esfera.
-        let kd = new THREE.Vector3(1.0, 0.0, 0.0); // Coeficiente de reflectancia difusa da esfera.
-        let Ia = new THREE.Vector3(0.2, 0.2, 0.2); // Intensidade da luz ambiente.
+          // Calculo do termo difuso do modelo local de iluminacao.
+          let termo_difuso = Ip.cor
+            .clone()
+            .multiply(obj.kd)
+            .multiplyScalar(Math.max(0.0, interseccao.normal.dot(L)));
 
-        let termo_ambiente = Ia.clone().multiply(ka); // Calculo do termo ambiente do modelo local de iluminacao.
-
-        let L = Ip.posicao.clone().sub(interseccao.posicao).normalize(); // Vetor que aponta para a fonte e luz pontual.
-
-        // Calculo do termo difuso do modelo local de iluminacao.
-        let termo_difuso = Ip.cor
-          .clone()
-          .multiply(kd)
-          .multiplyScalar(Math.max(0.0, interseccao.normal.dot(L)));
-
-        PutPixel(x, y, termo_difuso.add(termo_ambiente)); // Combina os termos difuso e ambiente e pinta o pixel.
-      } // Senao houver interseccao entao...
-      else PutPixel(x, y, new THREE.Vector3(0.0, 0.0, 0.0)); // Pinta o pixel com a cor de fundo.
+          PutPixel(x, y, termo_difuso.add(termo_ambiente)); // Combina os termos difuso e ambiente e pinta o pixel.
+        } else {
+          // Senao houver interseccao entao...
+          PutPixel(x, y, new THREE.Vector3(0.0, 0.0, 0.0)); // Pinta o pixel com a cor de fundo.
+        }
+      }
     }
 }
 
