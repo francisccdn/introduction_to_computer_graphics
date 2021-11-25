@@ -213,20 +213,121 @@ function Render() {
   const camera = new Camera();
   const objects = [];
 
+  // SCENE
+
+  const Vector3 = (a, b, c) => {
+    return new THREE.Vector3(a, b, c);
+  };
+
+  // Cherry
   objects.push(
-    new Triangle(
-      new THREE.Vector3(1.0, 1.0, -3.0),
-      new THREE.Vector3(0.75, -1, -2.5),
-      new THREE.Vector3(-1.0, -1.0, -3.5),
-      new THREE.Vector3(1, 0, 0),
-      new THREE.Vector3(1, 0, 0),
-      new THREE.Vector3(1, 1, 1),
+    new Esfera(
+      new THREE.Vector3(0, 1.8, -3),
+      0.2,
+      Vector3(1, 0, 0),
+      Vector3(1, 0, 0),
+      Vector3(1, 1, 1),
       32
     )
   );
 
+  // Ice cream
+  objects.push(
+    new Esfera(
+      new THREE.Vector3(0, 1, -3),
+      0.6,
+      Vector3(0.8, 0.8, 1),
+      Vector3(0, 0, 0.9),
+      Vector3(0.4, 0.4, 0.4),
+      16
+    )
+  );
+  objects.push(
+    new Esfera(
+      new THREE.Vector3(0, 0.2, -3),
+      0.85,
+      Vector3(1, 1, 1),
+      Vector3(1, 1, 0.3),
+      Vector3(0.3, 0.3, 0.3),
+      16
+    )
+  );
+
+  // Cone
+  const cone_kd = Vector3(1, 0.5, 0.1);
+  const cone_ka = Vector3(0.8, 0.6, 0.2);
+  const cone_ks = Vector3(0.4, 0.4, 0.4);
+  const cone_n = 0.8;
+
+  objects.push(
+    new Triangle(
+      Vector3(-0.9, 0, -3),
+      Vector3(-0.6, 0, -2.3),
+      Vector3(0.0, -2.4, -3),
+      cone_kd,
+      cone_ka,
+      cone_ks,
+      cone_n
+    )
+  );
+  objects.push(
+    new Triangle(
+      Vector3(-0.6, 0, -2.3),
+      Vector3(-0.2, 0, -2),
+      Vector3(0.0, -2.4, -3),
+      cone_kd,
+      cone_ka,
+      cone_ks,
+      cone_n
+    )
+  );
+  objects.push(
+    new Triangle(
+      Vector3(-0.2, 0, -2),
+      Vector3(0, 0, -2),
+      Vector3(0.0, -2.4, -3),
+      cone_kd,
+      cone_ka,
+      cone_ks,
+      cone_n
+    )
+  );
+  objects.push(
+    new Triangle(
+      Vector3(0.6, 0, -2.3),
+      Vector3(0.9, 0, -3),
+      Vector3(0.0, -2.4, -3),
+      cone_kd,
+      cone_ka,
+      cone_ks,
+      cone_n
+    )
+  );
+  objects.push(
+    new Triangle(
+      Vector3(0.2, 0, -2),
+      Vector3(0.6, 0, -2.3),
+      Vector3(0.0, -2.4, -3),
+      cone_kd,
+      cone_ka,
+      cone_ks,
+      cone_n
+    )
+  );
+  objects.push(
+    new Triangle(
+      Vector3(0, 0, -2),
+      Vector3(0.2, 0, -2),
+      Vector3(0.0, -2.4, -3),
+      cone_kd,
+      cone_ka,
+      cone_ks,
+      cone_n
+    )
+  );
+
   const Ip = new Luz(
-    new THREE.Vector3(-10.0, 10.0, 4.0),
+    new THREE.Vector3(8.0, 9.0, 3.0),
     new THREE.Vector3(0.8, 0.8, 0.8)
   );
   const Ia = new THREE.Vector3(0.2, 0.2, 0.2); // Intensidade da luz ambiente.
