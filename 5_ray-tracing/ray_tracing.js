@@ -20,12 +20,12 @@ function PutPixel(x, y, color) {
 
 // Classe que representa um raio de luz.
 // Construtor:
-//   origem: Ponto de origem do raio (THREE.Vector3).
-//   direcao: Vetor unitario que indica a direcao do raio (THREE.Vector3).
+//   origin: Ponto de origem do raio (THREE.Vector3).
+//   direction: Vetor unitario que indica a direcao do raio (THREE.Vector3).
 class Raio {
-  constructor(origem, direcao) {
-    this.origem = origem;
-    this.direcao = direcao;
+  constructor(origin, direction) {
+    this.origin = origin;
+    this.direction = direction;
   }
 }
 
@@ -61,10 +61,10 @@ class Camera {
       .add(this.b.clone().multiplyScalar(v))
       .add(this.k);
 
-    let origem = new THREE.Vector3(0.0, 0.0, 0.0);
-    let direcao = p.normalize();
+    let origin = new THREE.Vector3(0.0, 0.0, 0.0);
+    let direction = p.normalize();
 
-    return new Raio(origem, direcao);
+    return new Raio(origin, direction);
   }
 }
 
@@ -75,7 +75,7 @@ class Camera {
 class Interseccao {
   constructor() {
     this.t = Infinity; // distancia entre a origem do rio e o ponto de intersecao.
-    this.posicao = new THREE.Vector3(0.0, 0.0, 0.0); // Coordenadas do ponto de interseccao.
+    this.position = new THREE.Vector3(0.0, 0.0, 0.0); // Coordenadas do ponto de interseccao.
     this.normal = new THREE.Vector3(0.0, 0.0, 0.0); // Vetor normal no ponto de interseccao.
   }
 }
@@ -104,10 +104,10 @@ class Esfera {
   //   interseccao: Objeto do tipo Interseccao que armazena os dados da interseccao caso esta ocorra.
   // Retorno:
   //   Um valor booleano: 'true' caso haja interseccao; ou 'false' caso contrario.
-  interseccionar(raio, interseccao) {
-    let a = raio.direcao.clone().dot(raio.direcao);
-    let o_c = raio.origem.clone().sub(this.centro);
-    let b = 2.0 * raio.direcao.clone().dot(o_c);
+  intersect(raio, interseccao) {
+    let a = raio.direction.clone().dot(raio.direction);
+    let o_c = raio.origin.clone().sub(this.centro);
+    let b = 2.0 * raio.direction.clone().dot(o_c);
     let c = o_c.clone().dot(o_c) - this.raio * this.raio;
 
     let disc = b * b - 4.0 * a * c;
@@ -121,10 +121,10 @@ class Esfera {
       if (t2 > 0.001 && t2 < t1) interseccao.t = t2;
 
       if (interseccao.t > 0.001) {
-        interseccao.posicao = raio.origem
+        interseccao.position = raio.origin
           .clone()
-          .add(raio.direcao.clone().multiplyScalar(interseccao.t));
-        interseccao.normal = interseccao.posicao
+          .add(raio.direction.clone().multiplyScalar(interseccao.t));
+        interseccao.normal = interseccao.position
           .clone()
           .sub(this.centro)
           .normalize();
@@ -138,13 +138,72 @@ class Esfera {
   }
 }
 
+// Triangle primitive class
+//   a, b, c: Triangle vertices
+//   kd, ka, ks, n_highlight: Material/lighting variables
+class Triangle {
+  constructor(a, b, c, kd, ka, ks, n_highlight) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+
+    this.kd = kd;
+    this.ka = ka;
+    this.ks = ks;
+    this.n_highlight = n_highlight;
+  }
+
+  intersect(ray, intersection) {
+    // Axis of "triangle space"/tuv-space
+    const T = new THREE.Vector3().subVectors(ray.origin, this.a);
+    const E1 = new THREE.Vector3().subVectors(this.b, this.a);
+    const E2 = new THREE.Vector3().subVectors(this.c, this.a);
+
+    // Triangle normal
+    const normal = new THREE.Vector3().crossVectors(E2, E1);
+
+    // Pre-computing part 1
+    const triple_product = ray.direction.dot(normal);
+
+    // Backface culling (done as early as possible to save on processing)
+    if (triple_product >= -0.001) return false;
+
+    // Pre-computing part 2
+    const DxE2 = new THREE.Vector3().crossVectors(ray.direction, E2);
+    const TxE1 = new THREE.Vector3().crossVectors(T, E1);
+
+    // Calculate u
+    const u = DxE2.dot(T) / triple_product;
+
+    // If ray doesn't intersect
+    if (u < 0 || u > 1) return false;
+
+    // Calculate v
+    const v = TxE1.dot(ray.direction) / triple_product;
+
+    // If ray doesn't intersect
+    if (v < 0 || v > 1 || u + v > 1) return false;
+
+    // Calculate intersection data
+    intersection.t = TxE1.dot(E2) / triple_product;
+    intersection.normal = normal.normalize(); // Normalized normal for lighting
+    intersection.position = this.a
+      .clone()
+      .add(E1.multiplyScalar(u))
+      .add(E2.multiplyScalar(v)); // Barycentric coords
+
+    // If previous checks failed, ray intercepts triangle
+    return true;
+  }
+}
+
 // Classe que representa uma fonte de luz pontual.
 // Construtor:
-//   posicao: Posicao da fonte de luz pontual no espaco (THREE.Vector3).
+//   position: Posicao da fonte de luz pontual no espaco (THREE.Vector3).
 //   cor: Cor da fonte de luz no formato RGB (THREE.Vector3).
 class Luz {
-  constructor(posicao, cor) {
-    this.posicao = posicao;
+  constructor(position, cor) {
+    this.position = position;
     this.cor = cor;
   }
 }
@@ -155,9 +214,10 @@ function Render() {
   const objects = [];
 
   objects.push(
-    new Esfera(
-      new THREE.Vector3(0.0, 0.0, -3.0),
-      1.0,
+    new Triangle(
+      new THREE.Vector3(1.0, 1.0, -3.0),
+      new THREE.Vector3(0.75, -1, -2.5),
+      new THREE.Vector3(-1.0, -1.0, -3.5),
       new THREE.Vector3(1, 0, 0),
       new THREE.Vector3(1, 0, 0),
       new THREE.Vector3(1, 1, 1),
@@ -178,10 +238,10 @@ function Render() {
       let interseccao = new Interseccao();
 
       for (obj of objects) {
-        if (obj.interseccionar(raio, interseccao)) {
+        if (obj.intersect(raio, interseccao)) {
           // Se houver interseccao entao...
           const ambient_term = Ia.clone().multiply(obj.ka); // Calculo do termo ambiente do modelo local de iluminacao.
-          const L = Ip.posicao.clone().sub(interseccao.posicao).normalize(); // Vetor que aponta para a fonte e luz pontual.
+          const L = Ip.position.clone().sub(interseccao.position).normalize(); // Vetor que aponta para a fonte e luz pontual.
 
           // Calculo do termo difuso do modelo local de iluminacao.
           const diffuse_term = Ip.cor
@@ -190,7 +250,7 @@ function Render() {
             .multiplyScalar(Math.max(0.0, interseccao.normal.dot(L)));
 
           // Specular term for local illumination model
-          const V = interseccao.posicao.clone().normalize().multiplyScalar(-1); // Direction from point to camera
+          const V = interseccao.position.clone().normalize().multiplyScalar(-1); // Direction from point to camera
           const R = L.clone().reflect(interseccao.normal).multiplyScalar(-1); // Reflected L (points from point to light source) along normal
 
           const specular_term = Ip.cor
@@ -204,9 +264,6 @@ function Render() {
             .add(specular_term);
 
           PutPixel(x, y, fragment_color);
-        } else {
-          // Senao houver interseccao entao...
-          PutPixel(x, y, new THREE.Vector3(0.0, 0.0, 0.0)); // Pinta o pixel com a cor de fundo.
         }
       }
     }
