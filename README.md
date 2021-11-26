@@ -17,3 +17,6 @@ Implementation of the Phong illumination model, using both Gouraud shading and P
 
 ### 4 - Texture Filtering
 A comparative analysis of different kinds of texture filtering.
+
+### 5 - Ray Tracing
+Adding specular lighting and triangle primitives to a rudimentary ray tracer. 
